@@ -124,6 +124,7 @@ def extractFeaturesNames(df):
             Numerical key : List of all numerical features
             Quantitative key : List of all quantivative features 
     """
+    df = df[df.columns[1:]]
     result = {
         "features":{
             "names": list(df.columns[1:]),
