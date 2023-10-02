@@ -114,5 +114,5 @@ def predict(request):
 
             return render(request,'main/predict.html',context=data)
     if request.session.has_key('features'):
-        data["placeholder"] = " ".join(request.session["features"]['name'])
+        data["placeholder"] = ",".join(request.session["features"]['name'])
     return render(request,'main/predict.html',context=data)
