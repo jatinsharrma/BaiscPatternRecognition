@@ -1,0 +1,51 @@
+{% extends 'main.html' %}
+
+{% block body %}
+<div class="container" style="margin: 20px; display: block;">
+    <form style="display: flex;" method="POST" action="">
+
+        {% csrf_token %}
+        <input type="text" name="point" class="form-control" required="True" placeholder="Enter feature vector in form => {{placeholder}}">
+        <input type="submit" class="btn btn-primary" value="Predict">
+    </form>
+</div>
+<div class="container">
+    <table class="table table-striped">
+        <tr>
+            <th>Class Name</th>
+            <th>Numerical</th>
+            <th>Quantitative</th>
+            <th>Total</th>
+        </tr>
+        {% for row in predict %}
+        <tr>
+            {% for i in row %}
+            <td>{{ i }}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+<div class="container">
+    <h3>Confusion Matrix</h3>
+    <table class="table table-striped" style="margin: 5px;">
+    <tr>
+        <th></th>
+        <th>TP</th>
+        <th>FP</th>
+    </tr>
+    <tr>
+        <td>FN</td>
+        {% for i in confusion.0 %}
+        <td>{{ i }}</td>
+        {% endfor %}
+    </tr>
+    <tr>
+        <td>TN</td>
+        {% for i in confusion.1 %}
+        <td>{{ i }}</td>
+        {% endfor %}
+    </tr>
+    </table>
+</div>
+{% endblock %}

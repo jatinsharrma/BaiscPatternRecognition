@@ -1,0 +1,22 @@
+{% extends 'main.html' %}
+
+{% block body %}
+<div class="continer" style="text-align: center; margin: auto;">
+    <div style="position:absolute; top:40% ;left:40%">
+        <form method="POST" enctype="multipart/form-data" action="{% url 'show-dataset' %}"> 
+            {% csrf_token %}
+            <h4>Numerical</h4>
+            {% for i in features.Numerical %}
+            <input type="checkbox" name="numerical" value="{{i}}" id="{{i}}">
+            <label for="{{i}}">{{i}}</label><br>
+            {% endfor %}
+            <h4>Quantitative</h4>
+            {% for i in features.Quantitative %}
+            <input type="checkbox" name="quantitative" value="{{i}}" id="{{i}}">
+            <label for="{{i}}">{{i}}</label><br>
+            {% endfor %}
+            <input type="submit" type="button" class="btn btn-primary">
+        </form>
+    </div>
+</div>
+{% endblock %}

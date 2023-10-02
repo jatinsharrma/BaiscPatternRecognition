@@ -1,0 +1,15 @@
+{% extends 'main.html' %}
+
+{% block body %}
+    <div class="continer" style="text-align: center; margin: auto;">
+        <div style="position:absolute; top:40% ;left:40%">
+            <form method="POST" enctype="multipart/form-data" action="{% url 'feature-selection' %}"> 
+                {% csrf_token %}
+                <div class="mb-3">
+                    <input class="form-control" type="file" id="formFile" name="file" required="True">
+                </div>
+                <input type="submit" type="button" class="btn btn-primary">
+            </form>
+        </div>
+    </div>
+{% endblock %}

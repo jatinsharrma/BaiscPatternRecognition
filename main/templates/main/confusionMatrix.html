@@ -1,0 +1,19 @@
+{% extends 'main.html' %}
+
+{% block body %}
+
+<div class="container" style="display: flex;">
+    <div class="row">
+        {% for i in boxplot %}
+        <div class="card" style="margin: 2px;">
+            <div class="card-body">
+               {{ i|safe }}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div style="margin: 10px;"></div>
+</div>
+
+
+{% endblock %}

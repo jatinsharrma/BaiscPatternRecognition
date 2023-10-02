@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+    <title>Document</title> 
+    <style>
+    {% block style%}
+    {% endblock %}
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-primary">
+        <a class="navbar-brand" href="#" style="margin-left: 5%;">Pattern Recognisation</a>
+        <div style="display: flex; margin-right: 10%;">
+            <a class="btn" style="color:white;" href="{% url 'main-test'%}">Home</a>
+            <a class="btn" style="color:white;" href="{% url 'show-dataset' %}">DataView</a>
+            <a class="btn" style="color:white;" href="{% url 'class-view' %}">ClassView</a>
+            <a class="btn" style="color:white;" href="{% url 'feature-view' %}">FeatureView</a>
+            <a class="btn" style="color:white;" href="{% url 'predict' %}">Predict</a>
+            <a class="btn" style="color:white;" href="{% url 'box-plot' %}">BoxPlot</a>
+        </div>
+    </nav>
+    {% block body %}
+    {% endblock %}
+    <script>
+        {% block script %}
+        {% endblock %}
+    </script>
+</body>
+</html>

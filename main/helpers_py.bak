@@ -1,0 +1,159 @@
+import pandas as pd
+import numpy as np
+
+def convertToDataFrame(raw_data):
+    data = {}
+    data_frame = pd.read_csv(raw_data)
+    data_frame = pd.read_csv(raw_data)
+    data["rows"],data["columns"] = data_frame.shape
+    data["columns_details"] = extractColumnNameAndDataTypes(data_frame.dtypes.to_dict())
+
+
+    # # using numpy
+    # 
+    # try:
+    #     data = np.genfromtxt(raw_data, delimiter=',', dtype=None, names=True, encoding=None)
+    #     num_rows = len(data)
+    #     num_columns = len(data.dtype.names)
+    #     print(num_columns, num_rows)
+    #     # Prepare data for rendering in the template
+    #     data_list = data.tolist()
+    # except Exception as e:
+    #     error_message = str(e)
+    #     num_rows = num_columns = 0
+    #     data_list = []
+
+def getAnalytics(raw_data):
+    data = {"rows":0, "class":{}, "features":{}}
+    try: 
+        data_frame = np.genfromtxt(raw_data,delimiter=',',dtype=None, names=True, encoding=None)
+        data["rows"] = len(data_frame)
+        data["features"]["count"] = len(data_frame.dtype.names) -1 
+        data["class"]["heading"] = data_frame.dtype.names[0]
+        data["class"]["details"] = extractDetails(data_frame)
+        data["features"]["names"] = data_frame.dtype.names[1:]
+        data["features"]["datatype"] = extractColumnNameAndDataTypes(data_frame.dtype.descr)
+        print(data)
+    except Exception as e:
+        data["error"] = str(e)
+    return data
+
+# def extractColumnNameAndDataTypes(pandas_dtype):
+#     result = {}
+#     for i in pandas_dtype:
+#         result[i] = "Quantitative" if str(pandas_dtype[i]) == "object" else "Numerical"
+#     return result
+
+def extractColumnNameAndDataTypes(numpy_dtype):
+    """This will take the output of numpy.dtype.descr and return a dictionary. Dictionary key will be the column name and value will be 0 if dtype is '<U8' (i.e. Quantitative) otherwise 1 (i.e Numerical).
+
+    Args:
+        numpy_dtype (list): list of tuples with 2 str inside each tuple
+    """
+    result = {}
+    for col in numpy_dtype[1:]:
+        result[col[0]] = 0 if col[1] == '<U8' else 1
+
+    return result
+
+def extractDetails(data_frame):
+    """_summary_
+
+    Args:
+        data_frame (numpy array): _description_
+    """
+    segregated_class_data = segregateClassData(data_frame)
+    calculateSum(segregated_class_data)
+    calculateMean(segregated_class_data)
+    return segregated_class_data
+
+def segregateClassData(data_frame):
+    result = {}
+    for row in data_frame:
+        if row[0] not in result:
+            result[row[0]] = {}
+            for col in range(1,len(row)):
+                result[row[0]][col] = {"data":[]}
+        for col in range(1,len(row)):
+            result[row[0]][col]["data"].append(row[col])
+    
+    for class_name in result:
+        for featureName in result[class_name].keys():
+            result[class_name][featureName]["data"].sort()
+    
+    return result
+
+def calculateSum(segregated_class_data):
+    for class_name in segregated_class_data:
+        for feature in segregated_class_data[class_name]:
+            segregated_class_data[class_name][feature]["sum"] =sum(segregated_class_data[class_name][feature]["data"])
+
+def calculateStandardDeviation(data_frame,class_details):
+    pass
+
+def calculateMean(segregate_class_data):
+    for class_name in segregate_class_data:
+        for feature in segregate_class_data[class_name]:
+            segregate_class_data[class_name][feature]["mean"] = segregate_class_data[class_name][feature]["sum"]/len(segregate_class_data[class_name][feature]["data"])
+
+
+
+import numpy as np
+import pandas as pd
+
+def getStatics(raw_data):
+    """_summary_
+
+    Args:
+        raw_data (In Memory CSV): _description_
+    """
+    data = extractRequiredData(raw_data)
+
+    for class_name in data["class_viz_data"]:
+        df = pd.DataFrame(data["class_viz_data"][class_name]["data"])
+        df.columns = data["features"]["name"]
+        stats = df[data["features"]["Numerical"]].describe().to_dict()
+        data["class_viz_data"][class_name]["stats"] = stats
+
+        print(stats)
+
+
+def extractRequiredData(raw_data):
+    np_array = np.genfromtxt(raw_data,delimiter=",",names=True,encoding=None, dtype=None)
+
+    result = {
+        "class_name" : np_array.dtype.names[0],
+        "features":extractFeatureDetails(np_array.dtype.descr),
+        "class_viz_data": segregateClassData(np_array)
+    }
+    # lenOfEachClass(result)
+
+    return result
+
+
+def extractFeatureDetails(numpy_dtype):
+    result = {
+        "name":[],
+        "Numerical":[],
+        "Quantitative":[]}
+    for col in numpy_dtype[1:]: # ignoring first column name as it is the class name
+        result["name"].append(col[0])
+        if col[1] == '<U8':
+            result["Quantitative"].append(col[0])
+        else:
+            result["Numerical"].append(col[0])
+
+    return result
+
+def segregateClassData(np_array):
+    class_viz_data = {}
+    for row in np_array:
+        if row[0] not in class_viz_data:
+            class_viz_data[row[0]] = {"data":[]}
+        class_viz_data[row[0]]["data"].append(row[1:])
+    
+    return class_viz_data
+
+def lenOfEachClass(data):
+    for class_name in data["class_viz_data"]:
+        data["class_viz_data"][class_name]["count"] = len(data["class_viz_data"][class_name]["data"])
