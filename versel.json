@@ -14,7 +14,7 @@
     "routes": [
         {
             "src": "/(.*)",
-            "dest": "vercel_app/wsgi.py"
+            "dest": "pattern/wsgi.py"
         },
         {
             "src":"/static/(.*)",
