@@ -57,11 +57,16 @@ def predict(df, x):
     results = {}
     for c_name in list_of_classes:
         class_data = df[df.iloc[:, 0] == c_name]
+        class_data = class_data[class_data.columns[1:]]
         class_numeric_data = class_data.select_dtypes(include=[np.number])
 
         class_cov = class_numeric_data.cov(ddof=0)
         class_mean = class_numeric_data.mean()
-
+        print(x)
+        print("--------------------------")
+        print(class_mean)
+        print("----------------------------")
+        print(class_cov)
         y = multivariate_normal.pdf(x, class_mean, class_cov)
         results[c_name] = y
     
@@ -136,8 +141,8 @@ def extractFeaturesNames(df):
 
 def convertToPandas(raw_data,columns=None):
     """_summary_
-    This method converts raw data to pandas DataFrame .
-
+    This method converts raw data to pandas DataFrame.
+    All empty cells are automatically converted to NaN by pandas.
     Args:
         raw_data (Buffer) : data not in pandas dataframe format.
         columns (list, optional): This is used to get specific column as output. Defaults to None.
@@ -145,9 +150,11 @@ def convertToPandas(raw_data,columns=None):
     Returns:
         pandas.Dataframe : Pandas data frame.
     """
-    if columns:
+    if columns and type(raw_data) != type(str):
         df = pd.read_csv(StringIO(raw_data))
         return df[columns]
+    elif columns == None and type(raw_data) == type("a"):
+        return pd.read_csv(StringIO(raw_data))
     return pd.read_csv(raw_data)
 
 def get10RowsOfData(df):
@@ -236,8 +243,9 @@ def confusionMatix(df):
         list: list of rows of confusion matrix
     """
     class_name = df.columns[0]
-    features = df.select_dtypes(include=np.number).columns.to_list()
+    features = df[df.columns[1:]].select_dtypes(include=np.number).columns.to_list()
     random_df = df.sample(frac=1).sample(frac=0.2)
+    temp_random_df = random_df[random_df.columns[1:]]
     actual = []
     predicted = []
     df_dict = random_df.to_dict()
@@ -245,11 +253,13 @@ def confusionMatix(df):
     for i,j in df_dict[class_name].items():
         x = []
         for f in features:
-            x.append(df_dict[f][i])
+            x.append(temp_random_df[f][i])
         if j not in class_values:
             class_values.append(j)
         actual.append(class_values.index(j))
+        print(x,'------------------------------')
         x = str(x)[1:-1]
+        
         predict_x = predict(df,x)
         winner = [0]*len(features)
         if len(winner)>1:

@@ -44,13 +44,13 @@ def showDataset(request):
             columns = [request.session["class_name"]]
             columns.extend(features)
             df = helpers.convertToPandas(request.session["df"],columns)
-            request.session["df"] = df.to_csv()
+            request.session["df"] = df.to_csv(index=False)
             request.session["features"] = data["features"]
             data["df_10"] = helpers.get10RowsOfData(df)
     else:
         if request.session.has_key("df"):
             data["features"] = request.session["features"]
-            df = helpers.convertToPandas(request.session["df"],data["features"]["name"])
+            df = helpers.convertToPandas(request.session["df"])
             data["df_10"] = helpers.get10RowsOfData(df)
     return render(request,'main/datasetview.html',context=data)
 
@@ -95,18 +95,18 @@ def predict(request):
     data = {}
     if request.method == "POST":
         if request.session.has_key("df"):
-            point = request.POST["point"]
+            point = request.POST["point"].split(",")
             columns = [request.session["class_name"]]
             columns.extend(request.session["features"]["Numerical"])
             df = helpers.convertToPandas(request.session["df"],columns)
-            numerical = helpers.predict(df,point[:len(columns)])
+            numerical = helpers.predict(df,",".join(point[:len(request.session["features"]["Numerical"])]))
             data["confusion"] = helpers.confusionMatix(df)
             
             columns = [request.session["class_name"]]
             columns.extend(request.session["features"]["Quantitative"])
             if len(columns) > 1:
                 df = helpers.convertToPandas(request.session["df"],columns)
-                quantitative = helpers.bayesAnalysis(df,point.split(",")[-len(columns)+1:])
+                quantitative = helpers.bayesAnalysis(df,point[-len(columns)+1:])
             else:
                 quantitative = {item:1 for item in numerical}
 
